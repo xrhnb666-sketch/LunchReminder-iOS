@@ -2,6 +2,7 @@
 
 | Android 资源名 | iOS Asset 名称 / 路径 | 使用页面 |
 |---|---|---|
+| `drawable/app_icon.png` | `Assets.xcassets/AppIcon.appiconset` | iOS Launcher App Icon |
 | `drawable/app_icon.png` | `Assets.xcassets/AppIconPreview.imageset` | About、Launch Screen 简化图标 |
 | `drawable/splash_logo.png` | `Assets.xcassets/SplashLogo.imageset` | `SplashView` |
 | `drawable/ic_breakfast.png` | `Assets.xcassets/BreakfastIcon.imageset` | 首页早餐卡、历史、设置 |
@@ -25,4 +26,4 @@
 
 ## App Icon 说明
 
-当前 `AppIconPreview` 可用于 App 内展示和 Launch Screen。正式上架或 TestFlight 前，需要在 Xcode 中创建 `AppIcon.appiconset`，并使用用户提供的正式图标生成 iOS 所需尺寸。
+当前已创建 `AppIcon.appiconset`，并由 `project.yml` 的 `ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon` 引用。该 appiconset 使用现有 `app_icon.png` 作为占位来源；在正式 TestFlight 前，建议在 Mac 上用 Xcode 或设计工具导出精确尺寸图标，替换同一 appiconset 中的文件。

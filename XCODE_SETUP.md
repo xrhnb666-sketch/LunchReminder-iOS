@@ -1,12 +1,35 @@
 # Xcode Setup
 
-当前 Windows 环境无法编译 iOS。本目录提供 SwiftUI 源码、资源和测试文件；请在 Mac 上完成以下步骤。
+当前 Windows 环境无法编译 iOS。本目录提供 SwiftUI 源码、资源、测试文件和 XcodeGen 配置；请在 Mac 上完成以下步骤。
 
 ## 1. 安装 Xcode
 
 从 Mac App Store 安装最新版 Xcode。建议使用支持 iOS 16+、Swift Charts 的版本。
 
-## 2. 新建 SwiftUI App 工程
+## 2. 使用 XcodeGen 生成工程
+
+推荐使用 XcodeGen，而不是手工维护 `project.pbxproj`。
+
+```bash
+brew install xcodegen
+cd LunchReminder-iOS
+chmod +x generate_project.sh
+./generate_project.sh
+open LunchReminder.xcodeproj
+```
+
+`project.yml` 会创建：
+
+- App Target：`LunchReminder`
+- Unit Test Target：`LunchReminderTests`
+- Shared Scheme：`LunchReminder`
+- iOS Deployment Target：`17.0`
+- Bundle Identifier：`com.xrh.lunchreminder`
+- Display Name：`三餐提醒`
+
+当前 Windows 环境没有运行这些命令，因此此目录暂时不包含已生成的 `LunchReminder.xcodeproj`。
+
+## 3. 可选：手动新建 SwiftUI App 工程
 
 1. 打开 Xcode。
 2. 选择 `File > New > Project...`。
@@ -16,7 +39,9 @@
 6. Language 选择 `Swift`。
 7. Minimum Deployments 建议设置为 `iOS 16.0` 或更高。
 
-## 3. 加入源码文件
+如果你使用了 XcodeGen，可以跳过手动新建工程和手动添加源码文件的步骤。
+
+## 4. 加入源码文件
 
 将本目录下 `LunchReminder/` 内的这些文件夹拖入 Xcode 工程：
 
@@ -36,7 +61,7 @@
 
 如果 Xcode 自动生成了默认 `LunchReminderApp.swift`，请删除默认文件，使用本目录中的 `App/LunchReminderApp.swift`。
 
-## 4. 导入 Assets.xcassets
+## 5. 导入 Assets.xcassets
 
 将 `LunchReminder/Assets.xcassets` 内容合并到 Xcode 工程的 `Assets.xcassets`。
 
@@ -57,8 +82,11 @@
 - `NavHistory`
 - `NavStats`
 - `NavSettings`
+- `AppIcon`
 
-## 5. 导入提示音
+如果使用 XcodeGen，这些资源会通过 `project.yml` 自动加入 App Target。
+
+## 6. 导入提示音
 
 将 `LunchReminder/Resources/Sounds/` 下的 wav 文件拖入 Xcode：
 
@@ -69,9 +97,17 @@
 
 确保勾选 Target Membership，否则 `UNNotificationSound(named:)` 无法找到资源。
 
-## 6. 配置 Info.plist 和 Launch Screen
+如果使用 XcodeGen，`LunchReminder/Resources` 会加入 App Target，wav 会进入 Copy Bundle Resources。
+
+## 7. 配置 Info.plist 和 Launch Screen
 
 将 `Resources/Info.plist` 和 `Resources/LaunchScreen.storyboard` 加入工程。
+
+如果使用 XcodeGen：
+
+- `GENERATE_INFOPLIST_FILE = YES`
+- Info 关键字段由 `project.yml` 写入 build settings
+- `LaunchScreen.storyboard` 从 `LunchReminder/Resources` 加入资源
 
 在 Target 设置中确认：
 
@@ -80,7 +116,7 @@
 - Build：`1`
 - Launch Screen File：`LaunchScreen`
 
-## 7. 设置 Bundle Identifier 和签名
+## 8. 设置 Bundle Identifier 和签名
 
 在 Target > Signing & Capabilities 中：
 
@@ -88,13 +124,15 @@
 2. 选择你的 Apple Developer Team。
 3. 确认自动签名开启。
 
-## 8. 通知权限
+`project.yml` 中 `DEVELOPMENT_TEAM` 暂时留空，请在 Xcode 中选择你的 Team。
+
+## 9. 通知权限
 
 本项目使用系统通知权限弹窗，不需要在 Info.plist 添加 Android 那种权限声明。
 
 首次点击测试通知或开启提醒时，会调用 `UNUserNotificationCenter.requestAuthorization`。
 
-## 9. 运行 iPhone Simulator
+## 10. 运行 iPhone Simulator
 
 选择一个 iPhone Simulator，点击 Run。
 
@@ -107,7 +145,7 @@
 - 测试通知
 - 提示音选择
 
-## 10. 执行单元测试
+## 11. 执行单元测试
 
 将 `LunchReminderTests/` 加入 Test Target 后，执行：
 
@@ -126,7 +164,9 @@ Product > Test
 - 设置 Codable 编码解码
 - 历史统计
 
-## 11. Archive
+如果使用 XcodeGen，`LunchReminderTests` 已经由 `project.yml` 配置进 shared scheme。
+
+## 12. Archive
 
 确认模拟器和真机测试通过后：
 
@@ -134,7 +174,7 @@ Product > Test
 2. 选择 `Product > Archive`。
 3. 在 Organizer 中检查 Archive。
 
-## 12. TestFlight
+## 13. TestFlight
 
 如需给朋友安装长期测试版本：
 
